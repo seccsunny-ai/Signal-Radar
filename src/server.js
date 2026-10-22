@@ -30,9 +30,13 @@ app.use('/samples', express.static(path.join(__dirname, '..', 'samples')));
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // Multer storage for uploaded screenshots
-const uploadDir = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+const uploadDir = process.env.VERCEL ? path.join('/tmp', 'uploads') : path.join(__dirname, '..', 'uploads');
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+} catch (e) {
+  console.warn('Could not create upload directory:', e.message);
 }
 
 const storage = multer.diskStorage({
@@ -336,6 +340,10 @@ app.post('/api/reset', (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Signal Filter Web App running at http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Signal Filter Web App running at http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
