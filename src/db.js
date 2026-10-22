@@ -166,7 +166,9 @@ const db = {
           }
 
           list.sort((a, b) => {
-            if (b.is_recent !== a.is_recent) return b.is_recent - a.is_recent;
+            if (trimmed.includes('is_recent DESC') && b.is_recent !== a.is_recent) {
+              return b.is_recent - a.is_recent;
+            }
             return new Date(b.signal_timestamp).getTime() - new Date(a.signal_timestamp).getTime() || b.id - a.id;
           });
 

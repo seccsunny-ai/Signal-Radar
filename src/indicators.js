@@ -168,21 +168,21 @@ function parseSignalDate(dateStr, referenceDate = new Date()) {
   
   const refYear = referenceDate.getFullYear();
   const refMonth = referenceDate.getMonth();
-  const refDay = referenceDate.getDate();
   
   let year = refYear;
   if (explicitYear) {
     year = explicitYear;
   } else {
     // Financial indicator tables only display historical/current events, NEVER future events.
-    // If the signal's month is after reference month, or same month with day after reference day,
-    // the event occurred in the previous year (e.g. Nov 25 when today is Oct 22).
-    if (month > refMonth || (month === refMonth && day > refDay)) {
+    // If the signal's month is after reference month (e.g. Nov 25 when reference date is Oct),
+    // the event occurred in the previous year.
+    // NOTE: Within the same month, day differences are due to local timezone vs UTC offset, not previous year!
+    if (month > refMonth) {
       year = refYear - 1;
     }
   }
   
-  const d = new Date(year, month, day, hour, minute, 0);
+  const d = new Date(Date.UTC(year, month, day, hour, minute, 0));
   return d;
 }
 

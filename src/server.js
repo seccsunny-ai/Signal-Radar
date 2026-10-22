@@ -183,6 +183,29 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
     try {
       const parsedData = await parseTradingViewImage(filePath, mimeType, apiKey);
       
+function getFullDashboardData() {
+  const stats = getDashboardStats();
+  const confluences = getConfluences();
+  const confirmedCount = confluences.filter(c => c.status === 'CONFIRMED').length;
+  const pendingCount = confluences.filter(c => c.status === 'PENDING').length;
+  const matrix = getMatrixData();
+  const signals = querySignals({ limit: 100 });
+  const uploads = db.prepare(`SELECT * FROM image_uploads ORDER BY uploaded_at DESC`).all();
+
+  return {
+    stats: {
+      ...stats,
+      confluencesTotal: confluences.length,
+      confluencesConfirmed: confirmedCount,
+      confluencesPending: pendingCount
+    },
+    confluences,
+    matrix,
+    signals,
+    uploads
+  };
+}
+
       // Auto-commit or return for review based on query param
       const autoCommit = req.query.autoCommit !== 'false';
       if (autoCommit && parsedData.rows && parsedData.rows.length > 0) {
@@ -195,6 +218,8 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
           rows: parsedData.rows
         });
 
+        const fullData = getFullDashboardData();
+
         return res.json({
           success: true,
           committed: true,
@@ -204,7 +229,8 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
           file: {
             filename,
             url: `/uploads/${filename}`
-          }
+          },
+          fullData
         });
       }
 
@@ -243,14 +269,15 @@ app.post('/api/sync', (req, res) => {
     let newlyIngestedCount = 0;
 
     if (Array.isArray(uploads) && uploads.length > 0) {
-      const existingUploads = db.prepare(`SELECT header_text, reference_time FROM image_uploads`).all();
+      const existingUploads = db.prepare(`SELECT header_text, reference_time, filename FROM image_uploads`).all();
       
       for (const up of uploads) {
         if (!up.rows || !Array.isArray(up.rows)) continue;
 
-        // Check if already in this instance
+        // Check if already in this instance by filename or headerText
         const alreadyExists = existingUploads.some(
-          e => (e.header_text && e.header_text === up.headerText) || (e.reference_time && e.reference_time === up.referenceTime)
+          e => (up.filename && e.filename === up.filename) ||
+               (up.headerText && e.header_text && e.header_text === up.headerText)
         );
 
         if (!alreadyExists) {
@@ -263,28 +290,21 @@ app.post('/api/sync', (req, res) => {
             rows: up.rows
           });
           newlyIngestedCount += result.insertedSignalsCount;
+          existingUploads.push({
+            header_text: up.headerText || '',
+            reference_time: up.referenceTime || '',
+            filename: up.filename || ''
+          });
         }
       }
     }
 
-    const stats = getDashboardStats();
-    const confluences = getConfluences();
-    const confirmedCount = confluences.filter(c => c.status === 'CONFIRMED').length;
-    const pendingCount = confluences.filter(c => c.status === 'PENDING').length;
-    const allUploads = db.prepare(`SELECT * FROM image_uploads ORDER BY uploaded_at DESC`).all();
+    const fullData = getFullDashboardData();
 
     res.json({
       success: true,
       newlyIngestedCount,
-      data: {
-        stats: {
-          ...stats,
-          confluencesTotal: confluences.length,
-          confluencesConfirmed: confirmedCount,
-          confluencesPending: pendingCount
-        },
-        uploads: allUploads
-      }
+      data: fullData
     });
   } catch (err) {
     console.error('Sync error:', err);
@@ -361,7 +381,8 @@ app.post('/api/samples/load', (req, res) => {
       }
     }
 
-    res.json({ success: true, insertedSignalsCount: count });
+    const fullData = getFullDashboardData();
+    res.json({ success: true, insertedSignalsCount: count, fullData });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

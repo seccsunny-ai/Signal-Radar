@@ -140,26 +140,58 @@ function handleSelectedFile(file) {
   openUploadModal();
 }
 
+function applyFullData(data) {
+  if (!data) return;
+  if (data.stats) {
+    state.stats = data.stats;
+    renderStats();
+  }
+  if (data.confluences) {
+    state.confluences = data.confluences;
+    renderConfluences();
+  }
+  if (data.matrix) {
+    state.matrix = data.matrix;
+    renderMatrix();
+  }
+  if (data.signals) {
+    state.signals = data.signals;
+    renderSignals();
+  }
+  if (data.uploads) {
+    state.uploads = data.uploads;
+    renderUploads();
+  }
+}
+
 async function syncUserUploads() {
   try {
     const raw = localStorage.getItem('tv_user_uploads');
-    if (!raw) return;
+    if (!raw) return false;
     const uploads = JSON.parse(raw);
-    if (Array.isArray(uploads) && uploads.length > 0) {
-      await fetch('/api/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uploads })
-      });
+    if (!Array.isArray(uploads) || uploads.length === 0) return false;
+
+    const res = await fetch('/api/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uploads })
+    });
+    const json = await res.json();
+    if (json.success && json.data) {
+      applyFullData(json.data);
+      return true;
     }
   } catch (err) {
     console.warn('Failed to sync uploads:', err);
   }
+  return false;
 }
 
 // Data Fetching
 async function loadAllData() {
-  await syncUserUploads();
+  const synced = await syncUserUploads();
+  if (synced) return;
+
   await Promise.all([
     fetchStats(),
     fetchConfluences(),
@@ -770,8 +802,14 @@ async function processSelectedUpload() {
 
         showToast(`Successfully extracted and merged ${json.insertedSignalsCount} signals!`, 'success');
         closeUploadModal(true);
-        await syncUserUploads();
-        await loadAllData();
+
+        if (json.fullData) {
+          applyFullData(json.fullData);
+        } else {
+          await syncUserUploads();
+          await loadAllData();
+        }
+
         switchTab('matrix');
       }
     } else {
@@ -798,7 +836,11 @@ async function loadSample(sampleId) {
     const json = await res.json();
     if (json.success) {
       showToast(`Sample data loaded (+${json.insertedSignalsCount} signals)!`, 'success');
-      await loadAllData();
+      if (json.fullData) {
+        applyFullData(json.fullData);
+      } else {
+        await loadAllData();
+      }
     } else {
       showToast(json.error || 'Failed to load sample', 'error');
     }
