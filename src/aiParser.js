@@ -1,4 +1,3 @@
-const { GoogleGenAI } = require('@google/genai');
 const fs = require('fs');
 const db = require('./db');
 
@@ -18,15 +17,13 @@ function setApiKey(key) {
 }
 
 /**
- * Parses an image file using Gemini Vision model
+ * Parses an image file using Google Gemini Vision model
  */
 async function parseTradingViewImage(filePath, mimeType = 'image/png', explicitKey = null) {
   const apiKey = getApiKey(explicitKey);
   if (!apiKey) {
     throw new Error('GEMINI_API_KEY is not configured. Please enter your Gemini API key in Settings.');
   }
-
-  const ai = new GoogleGenAI({ apiKey });
 
   const fileBytes = fs.readFileSync(filePath);
   const base64Data = fileBytes.toString('base64');
@@ -44,14 +41,7 @@ There are two primary table types:
    Columns are usually: SYMBOL, 15m, 1h, 4h, 1D.
 
 2) "STRUCTURE_BOS_CHOCH": Contains structure break cells with:
-   - "Int BOS↑" (Bullish Internal Break of Structure)
-   - "Int BOS↓" (Bearish Internal Break of Structure)
-   - "Sw BOS↑" (Bullish Swing Break of Structure)
-   - "Sw BOS↓" (Bearish Swing Break of Structure)
-   - "Int CHoCH↑" (Bullish Internal Change of Character)
-   - "Int CHoCH↓" (Bearish Internal Change of Character)
-   - "Sw CHoCH↑" (Bullish Swing Change of Character)
-   - "Sw CHoCH↓" (Bearish Swing Change of Character)
+   - "Int BOS↑", "Int BOS↓", "Sw BOS↑", "Sw BOS↓", "Int CHoCH↑", "Int CHoCH↓", "Sw CHoCH↑", "Sw CHoCH↓"
    - "⚡" prefix indicates Recent.
    Columns are usually: SYMBOL, 15m, 1h, 4h.
 
@@ -70,12 +60,6 @@ Return ONLY a strict JSON object with this exact structure:
           "indicator": "G🔥",
           "isRecent": true,
           "dateStr": "22 Oct 15:15"
-        },
-        {
-          "timeframe": "15m",
-          "indicator": "V↑",
-          "isRecent": true,
-          "dateStr": "22 Oct 23:30"
         }
       ]
     }
@@ -89,61 +73,50 @@ Be extremely accurate with:
 5. All symbols in both top and bottom tables if image has multiple tables.
 `;
 
-  let response;
-  try {
-    response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: [
-        {
-          role: 'user',
-          parts: [
+  const modelsToTry = ['gemini-3.8-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite'];
+  let lastError = null;
+
+  for (const model of modelsToTry) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [
             {
-              text: 'Carefully parse this TradingView indicator table into JSON according to the instructions.'
-            },
-            {
-              inlineData: {
-                mimeType,
-                data: base64Data
-              }
+              parts: [
+                { text: 'Parse this TradingView indicator table into JSON according to the instructions.' },
+                { inlineData: { mimeType, data: base64Data } }
+              ]
             }
-          ]
-        }
-      ],
-      config: {
-        systemInstruction,
-        responseMimeType: 'application/json'
+          ],
+          systemInstruction: {
+            parts: [{ text: systemInstruction }]
+          },
+          generationConfig: {
+            responseMimeType: 'application/json'
+          }
+        })
+      });
+
+      const data = await res.json();
+      if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+        const text = data.candidates[0].content.parts[0].text;
+        const parsed = JSON.parse(text);
+        return parsed;
       }
-    });
-  } catch (modelErr) {
-    console.warn('gemini-2.0-flash fallback to gemini-1.5-flash:', modelErr.message);
-    response = await ai.models.generateContent({
-      model: 'gemini-1.5-flash',
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            {
-              text: 'Carefully parse this TradingView indicator table into JSON according to the instructions.'
-            },
-            {
-              inlineData: {
-                mimeType,
-                data: base64Data
-              }
-            }
-          ]
-        }
-      ],
-      config: {
-        systemInstruction,
-        responseMimeType: 'application/json'
+
+      if (data.error) {
+        throw new Error(data.error.message || JSON.stringify(data.error));
       }
-    });
+    } catch (err) {
+      console.warn(`Vision model ${model} error:`, err.message);
+      lastError = err;
+    }
   }
 
-  const responseText = response.text;
-  const parsedJson = JSON.parse(responseText);
-  return parsedJson;
+  throw new Error(`Vision Parsing failed: ${lastError ? lastError.message : 'No candidate returned'}`);
 }
 
 module.exports = {
