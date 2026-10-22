@@ -163,12 +163,13 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
     const mimeType = req.file.mimetype || 'image/png';
     const filename = req.file.filename;
 
-    const apiKey = getApiKey();
+    const clientKey = req.headers['x-gemini-api-key'] || req.body?.apiKey;
+    const apiKey = getApiKey(clientKey);
     if (!apiKey) {
       return res.json({
         success: true,
         needsApiKey: true,
-        message: 'Image uploaded, but Gemini API key is missing. Please configure your key in Settings or review/paste table manually.',
+        message: 'Gemini API key is required to process screenshots with AI Vision. Please enter your API key in Settings.',
         file: {
           filename,
           originalName: req.file.originalname,
@@ -180,7 +181,7 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
 
     // Process image with Gemini Vision
     try {
-      const parsedData = await parseTradingViewImage(filePath, mimeType);
+      const parsedData = await parseTradingViewImage(filePath, mimeType, apiKey);
       
       // Auto-commit or return for review based on query param
       const autoCommit = req.query.autoCommit !== 'false';

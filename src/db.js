@@ -216,9 +216,16 @@ const db = {
         }
 
         // Settings lookup
-        if (trimmed.includes('SELECT value FROM settings WHERE key = ?')) {
-          const key = params[0];
-          return state.settings[key] !== undefined ? { value: state.settings[key] } : undefined;
+        if (trimmed.includes('FROM settings WHERE key')) {
+          let key = params[0];
+          if (!key) {
+            const match = trimmed.match(/key\s*=\s*['"]?([a-zA-Z0-9_\-]+)['"]?/);
+            if (match) key = match[1];
+          }
+          if (key && state.settings && state.settings[key] !== undefined) {
+            return { value: state.settings[key] };
+          }
+          return undefined;
         }
 
         return undefined;
@@ -307,9 +314,21 @@ const db = {
 
         // Upsert setting
         if (trimmed.startsWith('INSERT INTO settings')) {
-          const [key, value] = params;
-          state.settings[key] = value;
-          saveState();
+          let sKey, sVal;
+          if (trimmed.includes("VALUES ('gemini_api_key'")) {
+            sKey = 'gemini_api_key';
+            sVal = params[0];
+          } else if (params.length >= 2) {
+            sKey = params[0];
+            sVal = params[1];
+          } else {
+            sKey = params[0];
+            sVal = params[0];
+          }
+          if (sKey) {
+            state.settings[sKey] = sVal;
+            saveState();
+          }
           return { changes: 1 };
         }
 

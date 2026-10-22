@@ -2,25 +2,28 @@ const { GoogleGenAI } = require('@google/genai');
 const fs = require('fs');
 const db = require('./db');
 
-function getApiKey() {
-  const row = db.prepare(`SELECT value FROM settings WHERE key = 'gemini_api_key'`).get();
+function getApiKey(explicitKey = null) {
+  if (explicitKey && typeof explicitKey === 'string' && explicitKey.trim().length > 0) {
+    return explicitKey.trim();
+  }
+  const row = db.prepare(`SELECT value FROM settings WHERE key = ?`).get('gemini_api_key');
   return (row && row.value) || process.env.GEMINI_API_KEY || '';
 }
 
 function setApiKey(key) {
   db.prepare(`
-    INSERT INTO settings (key, value) VALUES ('gemini_api_key', ?)
+    INSERT INTO settings (key, value) VALUES (?, ?)
     ON CONFLICT(key) DO UPDATE SET value = ?
-  `).run(key, key);
+  `).run('gemini_api_key', key, key);
 }
 
 /**
  * Parses an image file using Gemini Vision model
  */
-async function parseTradingViewImage(filePath, mimeType = 'image/png') {
-  const apiKey = getApiKey();
+async function parseTradingViewImage(filePath, mimeType = 'image/png', explicitKey = null) {
+  const apiKey = getApiKey(explicitKey);
   if (!apiKey) {
-    throw new Error('GEMINI_API_KEY is not configured. Please enter your Gemini API key in the web app Settings.');
+    throw new Error('GEMINI_API_KEY is not configured. Please enter your Gemini API key in Settings.');
   }
 
   const ai = new GoogleGenAI({ apiKey });
@@ -86,29 +89,57 @@ Be extremely accurate with:
 5. All symbols in both top and bottom tables if image has multiple tables.
 `;
 
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash',
-    contents: [
-      {
-        role: 'user',
-        parts: [
-          {
-            text: 'Carefully parse this TradingView indicator table into JSON according to the instructions.'
-          },
-          {
-            inlineData: {
-              mimeType,
-              data: base64Data
+  let response;
+  try {
+    response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            {
+              text: 'Carefully parse this TradingView indicator table into JSON according to the instructions.'
+            },
+            {
+              inlineData: {
+                mimeType,
+                data: base64Data
+              }
             }
-          }
-        ]
+          ]
+        }
+      ],
+      config: {
+        systemInstruction,
+        responseMimeType: 'application/json'
       }
-    ],
-    config: {
-      systemInstruction,
-      responseMimeType: 'application/json'
-    }
-  });
+    });
+  } catch (modelErr) {
+    console.warn('gemini-2.0-flash fallback to gemini-1.5-flash:', modelErr.message);
+    response = await ai.models.generateContent({
+      model: 'gemini-1.5-flash',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            {
+              text: 'Carefully parse this TradingView indicator table into JSON according to the instructions.'
+            },
+            {
+              inlineData: {
+                mimeType,
+                data: base64Data
+              }
+            }
+          ]
+        }
+      ],
+      config: {
+        systemInstruction,
+        responseMimeType: 'application/json'
+      }
+    });
+  }
 
   const responseText = response.text;
   const parsedJson = JSON.parse(responseText);

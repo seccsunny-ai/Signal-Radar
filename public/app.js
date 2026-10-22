@@ -72,6 +72,16 @@ function setupEventListeners() {
     }
   });
 
+  // Sync API key from localStorage to server on startup if present
+  const savedKey = localStorage.getItem('gemini_api_key');
+  if (savedKey) {
+    fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ apiKey: savedKey })
+    }).catch(() => {});
+  }
+
   // Modal open/close buttons
   document.getElementById('btnOpenUpload').addEventListener('click', openUploadModal);
   document.getElementById('btnOpenSettings').addEventListener('click', openSettingsModal);
@@ -112,13 +122,13 @@ function setupDropZone(zoneId, inputId) {
 }
 
 function handleSelectedFile(file) {
+  if (!file) return;
   state.selectedFile = file;
-  const modal = document.getElementById('uploadModal');
   const preview = document.getElementById('modalPreviewImg');
   const previewContainer = document.getElementById('modalPreviewContainer');
   const fileName = document.getElementById('modalFileName');
 
-  if (preview && file) {
+  if (preview) {
     const reader = new FileReader();
     reader.onload = (e) => {
       preview.src = e.target.result;
@@ -127,6 +137,7 @@ function handleSelectedFile(file) {
     };
     reader.readAsDataURL(file);
   }
+  openUploadModal();
 }
 
 // Data Fetching
@@ -699,25 +710,33 @@ async function processSelectedUpload() {
 
   const btn = document.getElementById('btnProcessUpload');
   btn.disabled = true;
-  btn.innerHTML = `<i data-lucide="loader-2" class="h-4 w-4 animate-spin"></i> <span>Processing...</span>`;
+  btn.innerHTML = `<i data-lucide="loader-2" class="h-4 w-4 animate-spin"></i> <span>Processing with AI Vision...</span>`;
   if (window.lucide) lucide.createIcons();
+
+  const clientKey = localStorage.getItem('gemini_api_key') || '';
+  const headers = {};
+  if (clientKey) {
+    headers['x-gemini-api-key'] = clientKey;
+  }
 
   try {
     const res = await fetch('/api/upload', {
       method: 'POST',
+      headers,
       body: formData
     });
     const json = await res.json();
 
     if (json.success) {
       if (json.needsApiKey) {
-        showToast(json.message, 'warning');
-        closeUploadModal();
+        showToast('Gemini API key is required. Please save it below to continue.', 'warning');
+        closeUploadModal(false); // Preserve state.selectedFile!
         openSettingsModal();
       } else {
         showToast(`Successfully extracted and merged ${json.insertedSignalsCount} signals!`, 'success');
-        closeUploadModal();
+        closeUploadModal(true);
         await loadAllData();
+        switchTab('matrix');
       }
     } else {
       showToast(json.error || 'Failed to process image', 'error');
@@ -757,6 +776,11 @@ async function openSettingsModal() {
   const modal = document.getElementById('settingsModal');
   modal.classList.remove('hidden');
 
+  const localKey = localStorage.getItem('gemini_api_key');
+  if (localKey) {
+    document.getElementById('inputApiKey').value = localKey;
+  }
+
   try {
     const res = await fetch('/api/settings');
     const json = await res.json();
@@ -779,6 +803,8 @@ async function saveSettings() {
     return;
   }
 
+  localStorage.setItem('gemini_api_key', apiKey);
+
   try {
     const res = await fetch('/api/settings', {
       method: 'POST',
@@ -789,6 +815,13 @@ async function saveSettings() {
     if (json.success) {
       showToast('API key saved successfully!', 'success');
       closeSettingsModal();
+
+      // If user had an image waiting to be processed, automatically resume!
+      if (state.selectedFile) {
+        showToast('Resuming image processing with your API key...', 'info');
+        openUploadModal();
+        processSelectedUpload();
+      }
     }
   } catch (err) {
     showToast('Error saving settings', 'error');
@@ -898,10 +931,12 @@ function openUploadModal() {
   document.getElementById('uploadModal').classList.remove('hidden');
 }
 
-function closeUploadModal() {
+function closeUploadModal(clearFile = true) {
   document.getElementById('uploadModal').classList.add('hidden');
-  document.getElementById('modalPreviewContainer').classList.add('hidden');
-  state.selectedFile = null;
+  if (clearFile) {
+    document.getElementById('modalPreviewContainer').classList.add('hidden');
+    state.selectedFile = null;
+  }
 }
 
 // Tab Switching
