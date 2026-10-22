@@ -1,0 +1,119 @@
+/* Custom CSS enhancements on top of Tailwind */
+:root {
+  --bg-main: #0b0e14;
+  --bg-card: #121824;
+  --bg-card-hover: #192233;
+  --border-subtle: #1e293b;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --gold: #fbbf24;
+  --gold-glow: rgba(251, 191, 36, 0.25);
+  --bull: #10b981;
+  --bull-glow: rgba(16, 185, 129, 0.2);
+  --bear: #f43f5e;
+  --bear-glow: rgba(244, 63, 94, 0.2);
+  --cyan: #06b6d4;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0b0e14;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Glowing & Highlighted Cards */
+.gold-glow {
+  box-shadow: 0 0 15px var(--gold-glow);
+  border-color: rgba(251, 191, 36, 0.5) !important;
+}
+
+.bull-glow {
+  box-shadow: 0 0 12px var(--bull-glow);
+  border-color: rgba(16, 185, 129, 0.4) !important;
+}
+
+.bear-glow {
+  box-shadow: 0 0 12px var(--bear-glow);
+  border-color: rgba(244, 63, 94, 0.4) !important;
+}
+
+.recent-pulse {
+  animation: pulse-border 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    border-color: rgba(251, 191, 36, 0.8);
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+  }
+  50% {
+    border-color: rgba(251, 191, 36, 0.2);
+    box-shadow: 0 0 2px rgba(251, 191, 36, 0.1);
+  }
+}
+
+/* Badges */
+.badge-gold {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fef3c7;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+.badge-cyan {
+  background: rgba(6, 182, 212, 0.15);
+  color: #cffafe;
+  border: 1px solid rgba(6, 182, 212, 0.4);
+}
+.badge-bull {
+  background: rgba(16, 185, 129, 0.15);
+  color: #a7f3d0;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+.badge-bear {
+  background: rgba(244, 63, 94, 0.15);
+  color: #fecdd3;
+  border: 1px solid rgba(244, 63, 94, 0.4);
+}
+
+/* TradingView Table styling */
+.tv-table th {
+  background-color: #121824;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  padding: 10px 14px;
+  border-bottom: 2px solid #1e293b;
+}
+
+.tv-table td {
+  border-bottom: 1px solid #161f30;
+  padding: 10px 12px;
+  vertical-align: top;
+}
+
+.tv-table tr:hover td {
+  background-color: rgba(30, 41, 59, 0.4);
+}
+
+.drag-over {
+  border-color: #3b82f6 !important;
+  background-color: rgba(59, 130, 246, 0.1) !important;
+}

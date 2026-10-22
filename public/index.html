@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradingView Signal Filter & Confluence Radar</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen text-slate-100 antialiased selection:bg-amber-500 selection:text-black">
+  <!-- Top Navbar -->
+  <header class="border-b border-slate-800 bg-[#0f141e]/90 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-amber-500 to-rose-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
+          <i data-lucide="activity" class="h-6 w-6 text-slate-950 font-bold"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="font-bold text-lg tracking-tight text-white">Signal Radar</h1>
+            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30">TradingView AI</span>
+          </div>
+          <p class="text-xs text-slate-400 hidden sm:block">Gold & Structure Confluence Engine</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <button id="btnOpenUpload" class="inline-flex items-center space-x-1.5 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-500/20 transition">
+          <i data-lucide="upload-cloud" class="h-4 w-4"></i>
+          <span>Upload Image</span>
+        </button>
+
+        <div class="relative inline-block text-left">
+          <button id="btnSampleDropdown" class="inline-flex items-center space-x-1 px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+            <i data-lucide="sparkles" class="h-4 w-4 text-amber-400"></i>
+            <span>Load Samples</span>
+            <i data-lucide="chevron-down" class="h-3.5 w-3.5 ml-0.5"></i>
+          </button>
+          <div id="sampleMenu" class="hidden absolute right-0 mt-2 w-56 rounded-xl bg-slate-900 border border-slate-800 shadow-xl z-50 p-1.5">
+            <button onclick="loadSample(1)" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-800 flex items-center justify-between">
+              <div>
+                <div class="font-medium text-slate-200">Sample 1: Gold / VMC / RSI</div>
+                <div class="text-[10px] text-slate-400">G🔥, G❄, V↑, R↑ table</div>
+              </div>
+              <span class="text-amber-400 font-mono text-[10px]">16 sym</span>
+            </button>
+            <button onclick="loadSample(2)" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-800 flex items-center justify-between mt-1">
+              <div>
+                <div class="font-medium text-slate-200">Sample 2: BOS / CHoCH</div>
+                <div class="text-[10px] text-slate-400">Int/Sw BOS & CHoCH table</div>
+              </div>
+              <span class="text-blue-400 font-mono text-[10px]">20 sym</span>
+            </button>
+            <button onclick="loadSample('all')" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-800 font-medium text-amber-300 border-t border-slate-800 mt-1">
+              ⚡ Reload Both Samples
+            </button>
+          </div>
+        </div>
+
+        <button id="btnOpenSettings" class="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition" title="Settings & API Key">
+          <i data-lucide="settings" class="h-5 w-5"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <!-- Top Stats Row -->
+    <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3.5 relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-slate-400">Tracked Symbols</span>
+          <i data-lucide="layers" class="h-4 w-4 text-slate-500"></i>
+        </div>
+        <div id="statSymbols" class="mt-2 text-2xl font-bold tracking-tight text-white font-mono">-</div>
+        <div class="text-[10px] text-slate-500 mt-1">Auto-accumulating</div>
+      </div>
+
+      <div class="bg-slate-900/80 border border-amber-500/30 rounded-xl p-3.5 relative overflow-hidden bg-gradient-to-br from-amber-500/5 to-transparent">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-amber-300 flex items-center gap-1">
+            <span>⚡ Recent G🔥</span>
+          </span>
+          <span class="text-sm">🔥</span>
+        </div>
+        <div id="statRecentGFlame" class="mt-2 text-2xl font-bold tracking-tight text-amber-400 font-mono">-</div>
+        <div class="text-[10px] text-amber-400/70 mt-1">Gold Buy Signals</div>
+      </div>
+
+      <div class="bg-slate-900/80 border border-cyan-500/30 rounded-xl p-3.5 relative overflow-hidden bg-gradient-to-br from-cyan-500/5 to-transparent">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-cyan-300 flex items-center gap-1">
+            <span>⚡ Recent G❄</span>
+          </span>
+          <span class="text-sm">❄</span>
+        </div>
+        <div id="statRecentGSnow" class="mt-2 text-2xl font-bold tracking-tight text-cyan-400 font-mono">-</div>
+        <div class="text-[10px] text-cyan-400/70 mt-1">Gold Sell Signals</div>
+      </div>
+
+      <div class="bg-slate-900/80 border border-emerald-500/30 rounded-xl p-3.5 relative overflow-hidden bg-gradient-to-br from-emerald-500/5 to-transparent">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-emerald-300">Confirmed Confluences</span>
+          <i data-lucide="check-circle" class="h-4 w-4 text-emerald-400"></i>
+        </div>
+        <div id="statConfirmed" class="mt-2 text-2xl font-bold tracking-tight text-emerald-400 font-mono">-</div>
+        <div class="text-[10px] text-emerald-400/70 mt-1">Gold + BOS/CHoCH ✅</div>
+      </div>
+
+      <div class="bg-slate-900/80 border border-purple-500/30 rounded-xl p-3.5 relative overflow-hidden bg-gradient-to-br from-purple-500/5 to-transparent">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-purple-300">Pending Follow-ups</span>
+          <i data-lucide="clock" class="h-4 w-4 text-purple-400"></i>
+        </div>
+        <div id="statPending" class="mt-2 text-2xl font-bold tracking-tight text-purple-300 font-mono">-</div>
+        <div class="text-[10px] text-purple-400/70 mt-1">Within 2d/7d/14d/21d</div>
+      </div>
+
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3.5 relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-slate-400">Total Recent (⚡)</span>
+          <i data-lucide="zap" class="h-4 w-4 text-amber-400"></i>
+        </div>
+        <div id="statTotalRecent" class="mt-2 text-2xl font-bold tracking-tight text-slate-200 font-mono">-</div>
+        <div class="text-[10px] text-slate-500 mt-1">All indicators</div>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <div class="border-b border-slate-800 flex items-center justify-between">
+      <nav class="flex space-x-1 sm:space-x-3 -mb-px" aria-label="Tabs">
+        <button onclick="switchTab('confluence')" id="tab-btn-confluence" class="tab-button border-b-2 border-amber-500 text-amber-400 px-3 sm:px-4 py-3 text-xs sm:text-sm font-semibold flex items-center space-x-2">
+          <i data-lucide="radar" class="h-4 w-4"></i>
+          <span>Confluence Radar</span>
+          <span id="badgeConfluenceCount" class="ml-1.5 px-2 py-0.5 text-[10px] rounded-full bg-amber-500/20 text-amber-300 font-mono">0</span>
+        </button>
+
+        <button onclick="switchTab('matrix')" id="tab-btn-matrix" class="tab-button border-b-2 border-transparent text-slate-400 hover:text-slate-200 px-3 sm:px-4 py-3 text-xs sm:text-sm font-medium flex items-center space-x-2">
+          <i data-lucide="table" class="h-4 w-4"></i>
+          <span>TradingView Matrix</span>
+        </button>
+
+        <button onclick="switchTab('signals')" id="tab-btn-signals" class="tab-button border-b-2 border-transparent text-slate-400 hover:text-slate-200 px-3 sm:px-4 py-3 text-xs sm:text-sm font-medium flex items-center space-x-2">
+          <i data-lucide="filter" class="h-4 w-4"></i>
+          <span>Signal Explorer</span>
+        </button>
+
+        <button onclick="switchTab('uploads')" id="tab-btn-uploads" class="tab-button border-b-2 border-transparent text-slate-400 hover:text-slate-200 px-3 sm:px-4 py-3 text-xs sm:text-sm font-medium flex items-center space-x-2">
+          <i data-lucide="image" class="h-4 w-4"></i>
+          <span>Image History</span>
+        </button>
+      </nav>
+
+      <!-- Quick action / refresh -->
+      <button onclick="refreshCurrentTab()" class="text-xs text-slate-400 hover:text-slate-200 flex items-center space-x-1 px-2.5 py-1.5 rounded-lg hover:bg-slate-800 transition">
+        <i data-lucide="refresh-cw" class="h-3.5 w-3.5"></i>
+        <span class="hidden sm:inline">Refresh</span>
+      </button>
+    </div>
+
+    <!-- TAB 1: CONFLUENCE RADAR -->
+    <section id="tab-confluence" class="tab-content space-y-4">
+      <!-- Strategy Explanation Banner -->
+      <div class="bg-gradient-to-r from-slate-900 via-slate-900/90 to-amber-950/20 border border-amber-500/20 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="flex items-start space-x-3">
+          <div class="h-8 w-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0 mt-0.5">
+            <span class="text-sm">🎯</span>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-slate-200">Gold Buy/Sell + BOS/CHoCH Follow-Up Engine</h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Watches for structure confirmation after <span class="text-amber-300 font-semibold">G🔥 (Gold Buy)</span> or <span class="text-cyan-300 font-semibold">G❄ (Gold Sell)</span>.
+              Validity windows: <span class="text-slate-300 font-mono">15m = 2 Days</span> | <span class="text-slate-300 font-mono">1H = 7 Days</span> | <span class="text-slate-300 font-mono">4H = 14 Days</span> | <span class="text-slate-300 font-mono">1D = 21 Days</span>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confluence Filters -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Status filter buttons -->
+          <button onclick="setConfluenceFilter('status', 'ALL')" id="conf-status-ALL" class="conf-filter-btn px-3 py-1 text-xs font-medium rounded-lg bg-amber-500 text-slate-950 font-bold transition">All</button>
+          <button onclick="setConfluenceFilter('status', 'CONFIRMED')" id="conf-status-CONFIRMED" class="conf-filter-btn px-3 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition flex items-center gap-1.5">
+            <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+            <span>Confirmed</span>
+          </button>
+          <button onclick="setConfluenceFilter('status', 'PENDING')" id="conf-status-PENDING" class="conf-filter-btn px-3 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition flex items-center gap-1.5">
+            <span class="h-2 w-2 rounded-full bg-purple-400 animate-pulse"></span>
+            <span>Pending Window</span>
+          </button>
+          <button onclick="setConfluenceFilter('status', 'EXPIRED')" id="conf-status-EXPIRED" class="conf-filter-btn px-3 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Expired</button>
+
+          <div class="h-5 w-px bg-slate-800 mx-1"></div>
+
+          <!-- Direction filter -->
+          <button onclick="setConfluenceFilter('direction', 'ALL')" id="conf-dir-ALL" class="conf-filter-btn px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Both Dirs</button>
+          <button onclick="setConfluenceFilter('direction', 'BULLISH')" id="conf-dir-BULLISH" class="conf-filter-btn px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition text-emerald-400">🔥 Bullish Only</button>
+          <button onclick="setConfluenceFilter('direction', 'BEARISH')" id="conf-dir-BEARISH" class="conf-filter-btn px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition text-cyan-400">❄ Bearish Only</button>
+
+          <div class="h-5 w-px bg-slate-800 mx-1"></div>
+
+          <!-- Timeframe select -->
+          <select id="confTfFilter" onchange="setConfluenceFilter('timeframe', this.value)" class="bg-slate-800 border border-slate-700 text-xs rounded-lg px-2.5 py-1 text-slate-200 focus:outline-none focus:border-amber-500">
+            <option value="">All Timeframes</option>
+            <option value="15m">15m (2 Days)</option>
+            <option value="1h">1H (7 Days)</option>
+            <option value="4h">4H (14 Days)</option>
+            <option value="1D">1D (21 Days)</option>
+          </select>
+        </div>
+
+        <!-- Search symbol -->
+        <div class="relative w-full sm:w-64">
+          <i data-lucide="search" class="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-500"></i>
+          <input type="text" id="confSearchSymbol" placeholder="Search symbol (e.g. BTC)..." oninput="handleConfSearch(this.value)" class="w-full bg-slate-800/80 border border-slate-700 rounded-lg pl-8 pr-3 py-1 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500">
+        </div>
+      </div>
+
+      <!-- Confluence List / Cards Grid -->
+      <div id="confluenceCardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered dynamically -->
+      </div>
+      <div id="confluenceEmptyState" class="hidden text-center py-16 bg-slate-900/40 rounded-xl border border-slate-800/80">
+        <i data-lucide="compass" class="h-10 w-10 text-slate-600 mx-auto mb-3"></i>
+        <h4 class="text-sm font-medium text-slate-300">No confluence setups match your filter</h4>
+        <p class="text-xs text-slate-500 mt-1">Try resetting filters or load sample images</p>
+      </div>
+    </section>
+
+    <!-- TAB 2: TRADINGVIEW MATRIX -->
+    <section id="tab-matrix" class="tab-content hidden space-y-4">
+      <!-- Quick Filter Bar -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          <span class="text-xs font-semibold text-slate-400 mr-1">Quick Filters:</span>
+          
+          <button onclick="setMatrixFilter('recent_g_flame')" id="mf-recent_g_flame" class="matrix-filter-btn px-2.5 py-1 text-xs rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-medium transition flex items-center gap-1">
+            <span>⚡ Recent G🔥 (Gold Buy)</span>
+          </button>
+
+          <button onclick="setMatrixFilter('recent_g_snow')" id="mf-recent_g_snow" class="matrix-filter-btn px-2.5 py-1 text-xs rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/30 font-medium transition flex items-center gap-1">
+            <span>⚡ Recent G❄ (Gold Sell)</span>
+          </button>
+
+          <button onclick="setMatrixFilter('any_recent')" id="mf-any_recent" class="matrix-filter-btn px-2.5 py-1 text-xs rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition flex items-center gap-1">
+            <i data-lucide="zap" class="h-3 w-3 text-amber-400"></i>
+            <span>Any ⚡ Recent</span>
+          </button>
+
+          <button onclick="setMatrixFilter('confluence_only')" id="mf-confluence_only" class="matrix-filter-btn px-2.5 py-1 text-xs rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition flex items-center gap-1">
+            <i data-lucide="check-circle" class="h-3 w-3 text-emerald-400"></i>
+            <span>Confirmed Only</span>
+          </button>
+
+          <button onclick="setMatrixFilter('all')" id="mf-all" class="matrix-filter-btn px-2.5 py-1 text-xs rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700 transition">
+            Show All
+          </button>
+        </div>
+
+        <div class="relative w-full sm:w-64">
+          <i data-lucide="search" class="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-500"></i>
+          <input type="text" id="matrixSearchInput" placeholder="Filter symbol (BTC, BONK, etc.)..." oninput="handleMatrixSearch(this.value)" class="w-full bg-slate-800/80 border border-slate-700 rounded-lg pl-8 pr-3 py-1 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500">
+        </div>
+      </div>
+
+      <!-- Matrix Table Container -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse tv-table">
+            <thead>
+              <tr>
+                <th class="w-44 sticky left-0 z-20 bg-slate-900 border-r border-slate-800">SYMBOL</th>
+                <th class="w-1/4">15m</th>
+                <th class="w-1/4">1h</th>
+                <th class="w-1/4">4h</th>
+                <th class="w-1/4">1D</th>
+              </tr>
+            </thead>
+            <tbody id="matrixTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: SIGNAL EXPLORER -->
+    <section id="tab-signals" class="tab-content hidden space-y-4">
+      <!-- Search & Filters Grid -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div>
+          <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Indicator</label>
+          <select id="filterIndicator" onchange="applySignalFilters()" class="w-full bg-slate-800 border border-slate-700 text-xs rounded-lg px-3 py-1.5 text-slate-200 focus:outline-none focus:border-amber-500">
+            <option value="">All Indicators</option>
+            <optgroup label="Gold Signals">
+              <option value="G🔥">G🔥 (Gold Buy)</option>
+              <option value="G❄">G❄ (Gold Sell)</option>
+            </optgroup>
+            <optgroup label="VMC Divergences">
+              <option value="V↑">V↑ (VMC Bull Div)</option>
+              <option value="V↓">V↓ (VMC Bear Div)</option>
+            </optgroup>
+            <optgroup label="RSI Divergences">
+              <option value="R↑">R↑ (RSI Bull Div)</option>
+              <option value="R↓">R↓ (RSI Bear Div)</option>
+            </optgroup>
+            <optgroup label="Break of Structure (BOS)">
+              <option value="Int BOS↑">Int BOS↑ (Bullish Internal BOS)</option>
+              <option value="Int BOS↓">Int BOS↓ (Bearish Internal BOS)</option>
+              <option value="Sw BOS↑">Sw BOS↑ (Bullish Swing BOS)</option>
+              <option value="Sw BOS↓">Sw BOS↓ (Bearish Swing BOS)</option>
+            </optgroup>
+            <optgroup label="Change of Character (CHoCH)">
+              <option value="Int CHoCH↑">Int CHoCH↑ (Bullish Internal CHoCH)</option>
+              <option value="Int CHoCH↓">Int CHoCH↓ (Bearish Internal CHoCH)</option>
+              <option value="Sw CHoCH↑">Sw CHoCH↑ (Bullish Swing CHoCH)</option>
+              <option value="Sw CHoCH↓">Sw CHoCH↓ (Bearish Swing CHoCH)</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Timeframe</label>
+          <select id="filterTimeframe" onchange="applySignalFilters()" class="w-full bg-slate-800 border border-slate-700 text-xs rounded-lg px-3 py-1.5 text-slate-200 focus:outline-none focus:border-amber-500">
+            <option value="">All Timeframes</option>
+            <option value="15m">15m</option>
+            <option value="1h">1h</option>
+            <option value="4h">4h</option>
+            <option value="1D">1D</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Direction</label>
+          <select id="filterDirection" onchange="applySignalFilters()" class="w-full bg-slate-800 border border-slate-700 text-xs rounded-lg px-3 py-1.5 text-slate-200 focus:outline-none focus:border-amber-500">
+            <option value="ALL">All Directions</option>
+            <option value="BULLISH">Bullish (↑ / 🔥)</option>
+            <option value="BEARISH">Bearish (↓ / ❄)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Recent Box (⚡)</label>
+          <select id="filterRecentOnly" onchange="applySignalFilters()" class="w-full bg-slate-800 border border-slate-700 text-xs rounded-lg px-3 py-1.5 text-slate-200 focus:outline-none focus:border-amber-500">
+            <option value="false">All Signals</option>
+            <option value="true">⚡ Recent Only</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Search Symbol</label>
+          <input type="text" id="filterSymbol" placeholder="e.g. BTCUSDT.P" oninput="applySignalFilters()" class="w-full bg-slate-800 border border-slate-700 text-xs rounded-lg px-3 py-1.5 text-slate-200 focus:outline-none focus:border-amber-500">
+        </div>
+      </div>
+
+      <!-- Signals Feed Table -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+        <div class="p-3 bg-slate-950/60 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+          <span id="signalsCountLabel">Showing 0 signals</span>
+          <button onclick="exportSignalsCSV()" class="hover:text-white flex items-center space-x-1">
+            <i data-lucide="download" class="h-3.5 w-3.5"></i>
+            <span>Export CSV</span>
+          </button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900/90 text-slate-400 border-b border-slate-800">
+              <tr>
+                <th class="p-3">SYMBOL</th>
+                <th class="p-3">TIMEFRAME</th>
+                <th class="p-3">INDICATOR</th>
+                <th class="p-3">NAME</th>
+                <th class="p-3">DIRECTION</th>
+                <th class="p-3">RECENT (⚡)</th>
+                <th class="p-3">SIGNAL TIME</th>
+                <th class="p-3">RAW VALUE</th>
+              </tr>
+            </thead>
+            <tbody id="signalsTableBody" class="divide-y divide-slate-800/60">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: IMAGE INGESTION & HISTORY -->
+    <section id="tab-uploads" class="tab-content hidden space-y-4">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Upload Zone -->
+        <div class="lg:col-span-1 space-y-4">
+          <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5">
+            <h3 class="text-sm font-semibold text-slate-200 mb-1 flex items-center space-x-2">
+              <i data-lucide="upload" class="h-4 w-4 text-blue-400"></i>
+              <span>Ingest Hourly Screenshot</span>
+            </h3>
+            <p class="text-xs text-slate-400 mb-4">
+              Drop your hourly TradingView table screenshot here, or press <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] font-mono text-amber-300">Ctrl + V</kbd> to paste directly!
+            </p>
+
+            <div id="dropZone" class="border-2 border-dashed border-slate-700 hover:border-blue-500/80 bg-slate-950/50 rounded-xl p-6 text-center cursor-pointer transition flex flex-col items-center justify-center space-y-3">
+              <div class="h-12 w-12 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center">
+                <i data-lucide="image-plus" class="h-6 w-6"></i>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-slate-300">Click to choose image or drag & drop</p>
+                <p class="text-[10px] text-slate-500 mt-0.5">Supports PNG, JPG, WebP screenshots</p>
+              </div>
+              <input type="file" id="fileInput" accept="image/*" class="hidden">
+            </div>
+
+            <div id="uploadProgress" class="hidden mt-4 space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-300 flex items-center gap-1.5">
+                  <i data-lucide="loader-2" class="h-3.5 w-3.5 text-blue-400 animate-spin"></i>
+                  <span id="uploadStatusText">Analyzing table with Vision AI...</span>
+                </span>
+              </div>
+              <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-blue-500 h-full w-2/3 animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sample Previews -->
+          <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+            <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Available Sample Images</h4>
+            <div class="space-y-2">
+              <div class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 flex items-center justify-between">
+                <div>
+                  <div class="text-xs font-medium text-slate-200">Sample 1: Gold / VMC / RSI</div>
+                  <div class="text-[10px] text-slate-400">16 crypto symbols (15m, 1h, 4h, 1D)</div>
+                </div>
+                <a href="/samples/sample_image_1_g_v_r.png" target="_blank" class="text-xs text-blue-400 hover:text-blue-300">View</a>
+              </div>
+              <div class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 flex items-center justify-between">
+                <div>
+                  <div class="text-xs font-medium text-slate-200">Sample 2: BOS / CHoCH</div>
+                  <div class="text-[10px] text-slate-400">20 symbols (15m, 1h, 4h)</div>
+                </div>
+                <a href="/samples/sample_image_2_bos_choch.png" target="_blank" class="text-xs text-blue-400 hover:text-blue-300">View</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- History & Logs -->
+        <div class="lg:col-span-2">
+          <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-sm font-semibold text-slate-200">Upload History & Ingestion Log</h3>
+              <span id="uploadsCountBadge" class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">0 batches</span>
+            </div>
+            <div id="uploadsListContainer" class="space-y-3">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Upload Modal / Review Dialog -->
+  <div id="uploadModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative">
+      <button onclick="closeUploadModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="h-5 w-5"></i>
+      </button>
+
+      <h3 class="text-base font-bold text-white mb-1 flex items-center gap-2">
+        <i data-lucide="image" class="h-5 w-5 text-blue-400"></i>
+        <span>Upload Hourly TradingView Table</span>
+      </h3>
+      <p class="text-xs text-slate-400 mb-4">Select or drop a new hourly table screenshot to merge signals</p>
+
+      <div id="modalDropZone" class="border-2 border-dashed border-slate-700 hover:border-blue-500 bg-slate-950/60 rounded-xl p-8 text-center cursor-pointer transition">
+        <i data-lucide="upload-cloud" class="h-10 w-10 text-blue-400 mx-auto mb-2"></i>
+        <p class="text-sm font-medium text-slate-200">Click or drag image file here</p>
+        <p class="text-xs text-slate-500 mt-1">Or paste from clipboard (<kbd class="text-amber-400 font-mono">Ctrl+V</kbd>)</p>
+        <input type="file" id="modalFileInput" accept="image/*" class="hidden">
+      </div>
+
+      <div id="modalPreviewContainer" class="hidden mt-4 space-y-3">
+        <div class="max-h-48 overflow-hidden rounded-lg border border-slate-800">
+          <img id="modalPreviewImg" src="" alt="Preview" class="w-full object-cover">
+        </div>
+        <div class="flex items-center justify-between">
+          <span id="modalFileName" class="text-xs text-slate-300 font-mono"></span>
+          <button id="btnProcessUpload" onclick="processSelectedUpload()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold flex items-center gap-2 transition">
+            <i data-lucide="cpu" class="h-4 w-4"></i>
+            <span>Parse & Merge with AI Vision</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+      <button onclick="closeSettingsModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="h-5 w-5"></i>
+      </button>
+
+      <h3 class="text-base font-bold text-white mb-1 flex items-center gap-2">
+        <i data-lucide="settings" class="h-5 w-5 text-amber-400"></i>
+        <span>Application Settings</span>
+      </h3>
+      <p class="text-xs text-slate-400 mb-4">Configure AI Vision parser & data retention</p>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Google Gemini API Key</label>
+          <input type="password" id="inputApiKey" placeholder="AIzaSy..." class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500 font-mono">
+          <p class="text-[11px] text-slate-400 mt-1">
+            Required for automatic AI extraction of new screenshots. Get a free key at <a href="https://aistudio.google.com/" target="_blank" class="text-amber-400 underline">Google AI Studio</a>.
+          </p>
+        </div>
+
+        <div class="pt-2 border-t border-slate-800 flex justify-end">
+          <button onclick="saveSettings()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-xs transition">
+            Save Key
+          </button>
+        </div>
+
+        <div class="pt-4 border-t border-slate-800 space-y-2">
+          <h4 class="text-xs font-semibold text-rose-400">Danger Zone</h4>
+          <p class="text-[11px] text-slate-400">Clear all accumulated symbols, signals, and upload history.</p>
+          <button onclick="resetAllData()" class="px-3 py-1.5 bg-rose-500/20 text-rose-300 border border-rose-500/30 hover:bg-rose-500/30 rounded-lg text-xs font-semibold transition">
+            Reset Database & Reload Samples
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Setup Details / Timeline Modal -->
+  <div id="setupModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 shadow-2xl relative">
+      <button onclick="closeSetupModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="h-5 w-5"></i>
+      </button>
+
+      <div id="setupModalContent">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 hidden px-4 py-2.5 rounded-xl text-xs font-semibold shadow-xl border flex items-center space-x-2 transition-all"></div>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
