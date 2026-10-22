@@ -1,0 +1,1239 @@
+{
+  "tableType": "OSCILLATOR_GOLD",
+  "headerText": "seccsunny created with TradingView.com, Oct 23, 2026 04:00 UTC+5:30",
+  "referenceTime": "2026-10-23T04:00:00Z",
+  "columns": [
+    "15m",
+    "1h",
+    "4h",
+    "1D"
+  ],
+  "rows": [
+    {
+      "symbol": "BTCUSDT.P",
+      "signals": [
+        {
+          "timeframe": "15m",
+          "indicator": "G🔥",
+          "isRecent": true,
+          "dateStr": "22 Oct 15:15"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 23:30"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "R↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 21:45"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "23 Sep 02:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "19 Oct 15:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "15 Oct 23:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "03 Oct 01:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "03 Oct 01:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "18 Oct 13:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "25 Nov 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "08 Oct 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "08 Sep 05:30"
+        }
+      ]
+    },
+    {
+      "symbol": "FETUSDT.P",
+      "signals": [
+        {
+          "timeframe": "15m",
+          "indicator": "G🔥",
+          "isRecent": false,
+          "dateStr": "10 Oct 01:45"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 09:00"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "R↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 21:45"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "G🔥",
+          "isRecent": true,
+          "dateStr": "18 Oct 01:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "19 Oct 04:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "23 Oct 02:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "31 May 17:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "26 Sep 09:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "10 Oct 17:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "08 Oct 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "08 Oct 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "10 Oct 05:30"
+        }
+      ]
+    },
+    {
+      "symbol": "LDOUSDT.P",
+      "signals": [
+        {
+          "timeframe": "15m",
+          "indicator": "G🔥",
+          "isRecent": true,
+          "dateStr": "22 Oct 14:45"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 14:45"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "R↑",
+          "isRecent": true,
+          "dateStr": "23 Oct 03:15"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "21 Sep 10:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "23 Oct 00:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "22 Oct 00:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "24 Aug 13:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "22 Oct 01:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "22 Sep 09:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "16 Aug 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "30 Sep 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "30 Sep 05:30"
+        }
+      ]
+    },
+    {
+      "symbol": "SUIUSDT.P",
+      "signals": [
+        {
+          "timeframe": "15m",
+          "indicator": "G🔥",
+          "isRecent": true,
+          "dateStr": "22 Oct 15:15"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 15:15"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "R↑",
+          "isRecent": true,
+          "dateStr": "23 Oct 03:15"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "26 Sep 07:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 17:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "23 Oct 03:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "26 Sep 17:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "V↑",
+          "isRecent": false,
+          "dateStr": "15 Oct 21:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "16 Oct 01:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "30 Jul 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "27 Aug 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "02 Oct 05:30"
+        }
+      ]
+    },
+    {
+      "symbol": "1000BONKUSDT.P",
+      "signals": [
+        {
+          "timeframe": "15m",
+          "indicator": "G🔥",
+          "isRecent": true,
+          "dateStr": "22 Oct 15:00"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 15:00"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "R↑",
+          "isRecent": true,
+          "dateStr": "23 Oct 03:15"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "G🔥",
+          "isRecent": false,
+          "dateStr": "07 Oct 21:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "21 Oct 02:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "20 Oct 20:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "23 Sep 21:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "V↓",
+          "isRecent": true,
+          "dateStr": "22 Oct 13:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "06 Sep 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "G🔥",
+          "isRecent": false,
+          "dateStr": "22 Jul 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "07 Oct 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "09 Oct 05:30"
+        }
+      ]
+    },
+    {
+      "symbol": "JUPUSDT.P",
+      "signals": [
+        {
+          "timeframe": "15m",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "21 Oct 15:45"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 21:45"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "R↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 23:45"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "22 Oct 02:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "22 Oct 02:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "07 Oct 02:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "19 Sep 21:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "V↓",
+          "isRecent": true,
+          "dateStr": "22 Oct 09:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "28 Sep 21:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "13 Oct 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "11 Sep 05:30"
+        }
+      ]
+    },
+    {
+      "symbol": "NEARUSDT.P",
+      "signals": [
+        {
+          "timeframe": "15m",
+          "indicator": "G🔥",
+          "isRecent": false,
+          "dateStr": "19 Oct 02:15"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 15:30"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "R↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 21:45"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "G🔥",
+          "isRecent": false,
+          "dateStr": "15 Oct 03:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "21 Oct 11:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "23 Oct 03:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "21 Sep 21:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "08 Oct 21:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "09 Oct 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "09 Oct 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "09 Oct 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "08 Jun 05:30"
+        }
+      ]
+    },
+    {
+      "symbol": "PYTHUSDT.P",
+      "signals": [
+        {
+          "timeframe": "15m",
+          "indicator": "G🔥",
+          "isRecent": true,
+          "dateStr": "22 Oct 15:30"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 15:30"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "21 Oct 07:00"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "22 Oct 00:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "V↓",
+          "isRecent": true,
+          "dateStr": "22 Oct 16:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "22 Oct 00:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "24 Aug 09:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "22 Sep 09:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "20 Oct 17:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "19 Oct 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "19 Oct 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "20 Oct 05:30"
+        }
+      ]
+    },
+    {
+      "symbol": "BCHUSDT.P",
+      "signals": [
+        {
+          "timeframe": "15m",
+          "indicator": "G🔥",
+          "isRecent": true,
+          "dateStr": "22 Oct 15:00"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 15:00"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "R↑",
+          "isRecent": true,
+          "dateStr": "23 Oct 03:15"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "07 Oct 21:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "22 Oct 00:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "20 Oct 13:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "22 Sep 13:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "V↓",
+          "isRecent": true,
+          "dateStr": "22 Oct 05:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "16 Oct 01:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "02 Jun 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "28 Aug 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "06 Aug 05:30"
+        }
+      ]
+    },
+    {
+      "symbol": "DOGEUSDT.P",
+      "signals": [
+        {
+          "timeframe": "15m",
+          "indicator": "G🔥",
+          "isRecent": true,
+          "dateStr": "22 Oct 15:00"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "23 Oct 00:15"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "22 Oct 15:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "G🔥",
+          "isRecent": false,
+          "dateStr": "13 Oct 08:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "21 Oct 05:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "23 Oct 03:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "15 May 13:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "V↓",
+          "isRecent": true,
+          "dateStr": "22 Oct 09:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "24 Sep 01:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "29 Sep 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "29 Sep 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "06 Aug 05:30"
+        }
+      ]
+    },
+    {
+      "symbol": "PENDLEUSDT.P",
+      "signals": [
+        {
+          "timeframe": "15m",
+          "indicator": "G🔥",
+          "isRecent": false,
+          "dateStr": "18 Oct 20:30"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 15:15"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "R↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 23:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "G🔥",
+          "isRecent": false,
+          "dateStr": "09 Oct 02:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "23 Oct 00:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "21 Oct 17:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "09 May 17:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "V↓",
+          "isRecent": true,
+          "dateStr": "22 Oct 01:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "13 Oct 21:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "G🔥",
+          "isRecent": false,
+          "dateStr": "08 Apr 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "19 Jul 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "25 Sep 05:30"
+        }
+      ]
+    },
+    {
+      "symbol": "AVAXUSDT.P",
+      "signals": [
+        {
+          "timeframe": "15m",
+          "indicator": "G🔥",
+          "isRecent": true,
+          "dateStr": "22 Oct 21:45"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 23:15"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "R↑",
+          "isRecent": true,
+          "dateStr": "23 Oct 03:15"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "12 Oct 14:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "16 Oct 18:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "15 Oct 22:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "04 Sep 17:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "V↑",
+          "isRecent": false,
+          "dateStr": "15 Oct 21:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "23 Sep 21:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "30 Jul 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "09 Oct 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "04 Oct 05:30"
+        }
+      ]
+    },
+    {
+      "symbol": "TAOUSDT.P",
+      "signals": [
+        {
+          "timeframe": "15m",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "04 Oct 08:30"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 15:00"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "R↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 23:45"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "27 Sep 19:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "12 Oct 08:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "R↑",
+          "isRecent": true,
+          "dateStr": "23 Oct 03:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "27 Sep 05:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "V↑",
+          "isRecent": false,
+          "dateStr": "15 Oct 21:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "06 Oct 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "29 Mar 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "11 Sep 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "11 Sep 05:30"
+        }
+      ]
+    },
+    {
+      "symbol": "INJUSDT.P",
+      "signals": [
+        {
+          "timeframe": "15m",
+          "indicator": "G🔥",
+          "isRecent": true,
+          "dateStr": "22 Oct 22:00"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 22:00"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "R↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 19:45"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "12 Oct 02:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "21 Oct 10:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "12 Oct 15:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "24 Sep 01:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "21 Oct 13:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "22 Oct 01:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "25 May 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "29 Aug 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "30 Sep 05:30"
+        }
+      ]
+    },
+    {
+      "symbol": "HYPEUSDT.P",
+      "signals": [
+        {
+          "timeframe": "15m",
+          "indicator": "G🔥",
+          "isRecent": true,
+          "dateStr": "22 Oct 15:15"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 15:15"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "R↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 19:45"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "06 Oct 05:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "15 Oct 01:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "21 Oct 11:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "22 Sep 01:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "V↓",
+          "isRecent": true,
+          "dateStr": "22 Oct 05:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "16 Oct 01:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "08 Sep 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "26 Sep 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "27 Sep 05:30"
+        }
+      ]
+    },
+    {
+      "symbol": "BEAMUSDT.P",
+      "signals": [
+        {
+          "timeframe": "15m",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "20 Oct 01:45"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "V↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 21:15"
+        },
+        {
+          "timeframe": "15m",
+          "indicator": "R↑",
+          "isRecent": true,
+          "dateStr": "22 Oct 18:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "G🔥",
+          "isRecent": false,
+          "dateStr": "30 Sep 22:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "20 Oct 03:30"
+        },
+        {
+          "timeframe": "1h",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "20 Oct 13:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "G❄",
+          "isRecent": false,
+          "dateStr": "28 Aug 09:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "21 Oct 13:30"
+        },
+        {
+          "timeframe": "4h",
+          "indicator": "R↓",
+          "isRecent": false,
+          "dateStr": "17 Oct 09:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "G🔥",
+          "isRecent": false,
+          "dateStr": "16 Oct 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "V↓",
+          "isRecent": false,
+          "dateStr": "16 Oct 05:30"
+        },
+        {
+          "timeframe": "1D",
+          "indicator": "R↑",
+          "isRecent": false,
+          "dateStr": "30 Jun 05:30"
+        }
+      ]
+    }
+  ]
+}

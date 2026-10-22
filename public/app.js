@@ -140,8 +140,26 @@ function handleSelectedFile(file) {
   openUploadModal();
 }
 
+async function syncUserUploads() {
+  try {
+    const raw = localStorage.getItem('tv_user_uploads');
+    if (!raw) return;
+    const uploads = JSON.parse(raw);
+    if (Array.isArray(uploads) && uploads.length > 0) {
+      await fetch('/api/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uploads })
+      });
+    }
+  } catch (err) {
+    console.warn('Failed to sync uploads:', err);
+  }
+}
+
 // Data Fetching
 async function loadAllData() {
+  await syncUserUploads();
   await Promise.all([
     fetchStats(),
     fetchConfluences(),
@@ -733,8 +751,26 @@ async function processSelectedUpload() {
         closeUploadModal(false); // Preserve state.selectedFile!
         openSettingsModal();
       } else {
+        // Save to browser storage so user uploads are NEVER lost across Vercel serverless cold starts!
+        if (json.parsedData && json.parsedData.rows) {
+          try {
+            const savedUploads = JSON.parse(localStorage.getItem('tv_user_uploads') || '[]');
+            savedUploads.push({
+              headerText: json.parsedData.headerText || '',
+              referenceTime: json.parsedData.referenceTime || new Date().toISOString(),
+              tableType: json.parsedData.tableType || 'AUTO',
+              filename: json.file?.filename || 'uploaded_image.png',
+              rows: json.parsedData.rows
+            });
+            localStorage.setItem('tv_user_uploads', JSON.stringify(savedUploads));
+          } catch (e) {
+            console.warn('LocalStorage error:', e);
+          }
+        }
+
         showToast(`Successfully extracted and merged ${json.insertedSignalsCount} signals!`, 'success');
         closeUploadModal(true);
+        await syncUserUploads();
         await loadAllData();
         switchTab('matrix');
       }
@@ -833,6 +869,7 @@ async function resetAllData() {
     return;
   }
 
+  localStorage.removeItem('tv_user_uploads');
   try {
     await fetch('/api/reset', { method: 'POST' });
     await loadSample('all');

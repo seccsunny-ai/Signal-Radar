@@ -15,7 +15,7 @@ const {
 } = require('./storage');
 const { getConfluences } = require('./confluence');
 const { parseTradingViewImage, getApiKey, setApiKey } = require('./aiParser');
-const { SAMPLE_1_DATA, SAMPLE_2_DATA } = require('./seedData');
+const { SAMPLE_1_DATA, SAMPLE_2_DATA, SAMPLE_3_DATA } = require('./seedData');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -236,6 +236,62 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
   }
 });
 
+// Sync endpoint for serverless persistence (syncs uploads from client storage)
+app.post('/api/sync', (req, res) => {
+  try {
+    const { uploads } = req.body;
+    let newlyIngestedCount = 0;
+
+    if (Array.isArray(uploads) && uploads.length > 0) {
+      const existingUploads = db.prepare(`SELECT header_text, reference_time FROM image_uploads`).all();
+      
+      for (const up of uploads) {
+        if (!up.rows || !Array.isArray(up.rows)) continue;
+
+        // Check if already in this instance
+        const alreadyExists = existingUploads.some(
+          e => (e.header_text && e.header_text === up.headerText) || (e.reference_time && e.reference_time === up.referenceTime)
+        );
+
+        if (!alreadyExists) {
+          const result = ingestParsedData({
+            headerText: up.headerText || '',
+            referenceTime: up.referenceTime || new Date().toISOString(),
+            tableType: up.tableType || 'AUTO',
+            filename: up.filename || 'uploaded_image.png',
+            filePath: up.filePath || '',
+            rows: up.rows
+          });
+          newlyIngestedCount += result.insertedSignalsCount;
+        }
+      }
+    }
+
+    const stats = getDashboardStats();
+    const confluences = getConfluences();
+    const confirmedCount = confluences.filter(c => c.status === 'CONFIRMED').length;
+    const pendingCount = confluences.filter(c => c.status === 'PENDING').length;
+    const allUploads = db.prepare(`SELECT * FROM image_uploads ORDER BY uploaded_at DESC`).all();
+
+    res.json({
+      success: true,
+      newlyIngestedCount,
+      data: {
+        stats: {
+          ...stats,
+          confluencesTotal: confluences.length,
+          confluencesConfirmed: confirmedCount,
+          confluencesPending: pendingCount
+        },
+        uploads: allUploads
+      }
+    });
+  } catch (err) {
+    console.error('Sync error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Manual commit / confirmation of parsed data
 app.post('/api/upload/commit', (req, res) => {
   try {
@@ -293,6 +349,16 @@ app.post('/api/samples/load', (req, res) => {
         filePath: path.join(__dirname, '..', 'samples', 'sample_image_2_bos_choch.png')
       });
       count += res2.insertedSignalsCount;
+    }
+
+    if (sampleId === 3 || sampleId === '3') {
+      if (SAMPLE_3_DATA) {
+        const res3 = ingestParsedData({
+          ...SAMPLE_3_DATA,
+          filePath: path.join(__dirname, '..', 'samples', 'sample_image_3_oct23.png')
+        });
+        count += res3.insertedSignalsCount;
+      }
     }
 
     res.json({ success: true, insertedSignalsCount: count });

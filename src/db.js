@@ -90,7 +90,7 @@ const db = {
         }
 
         // Query image uploads
-        if (trimmed.startsWith('SELECT * FROM image_uploads')) {
+        if (trimmed.includes('FROM image_uploads')) {
           return [...state.image_uploads].sort((a, b) => (b.uploaded_at || '').localeCompare(a.uploaded_at || ''));
         }
 
@@ -184,32 +184,29 @@ const db = {
 
       get: (...params) => {
         // Stats counts
-        if (trimmed.includes('SELECT COUNT(*) as c FROM symbols') || trimmed.includes('SELECT COUNT(*) as count FROM symbols')) {
-          return { count: state.symbols.length, c: state.symbols.length };
-        }
-        if (trimmed.includes("indicator_type = 'G🔥' AND is_recent = 1")) {
-          const count = state.signals.filter(s => s.indicator_type === 'G🔥' && s.is_recent === 1).length;
-          return { count };
-        }
-        if (trimmed.includes("indicator_type = 'G❄' AND is_recent = 1")) {
-          const count = state.signals.filter(s => s.indicator_type === 'G❄' && s.is_recent === 1).length;
-          return { count };
-        }
-        if (trimmed.includes('is_recent = 1')) {
-          const count = state.signals.filter(s => s.is_recent === 1).length;
-          return { count };
-        }
-        if (trimmed.includes("indicator_type IN ('G🔥', 'G❄')")) {
-          const count = state.signals.filter(s => s.indicator_type === 'G🔥' || s.indicator_type === 'G❄').length;
-          return { count };
-        }
-        if (trimmed.includes("indicator_group = 'STRUCTURE'")) {
-          const count = state.signals.filter(s => s.indicator_group === 'STRUCTURE').length;
-          return { count };
+        if (trimmed.includes('SELECT COUNT(*)')) {
+          if (trimmed.includes('FROM symbols')) {
+            return { count: state.symbols.length, c: state.symbols.length };
+          }
+          if (trimmed.includes('FROM signals')) {
+            let list = [...state.signals];
+            if (trimmed.includes("indicator_type = 'G🔥' AND is_recent = 1")) {
+              list = list.filter(s => s.indicator_type === 'G🔥' && s.is_recent === 1);
+            } else if (trimmed.includes("indicator_type = 'G❄' AND is_recent = 1")) {
+              list = list.filter(s => s.indicator_type === 'G❄' && s.is_recent === 1);
+            } else if (trimmed.includes('is_recent = 1')) {
+              list = list.filter(s => s.is_recent === 1);
+            } else if (trimmed.includes("indicator_type IN ('G🔥', 'G❄')")) {
+              list = list.filter(s => s.indicator_type === 'G🔥' || s.indicator_type === 'G❄');
+            } else if (trimmed.includes("indicator_group = 'STRUCTURE'")) {
+              list = list.filter(s => s.indicator_group === 'STRUCTURE');
+            }
+            return { count: list.length, c: list.length };
+          }
         }
 
-        // Get latest reference time from image_uploads
-        if (trimmed.includes('SELECT reference_time FROM image_uploads') || trimmed.includes('ORDER BY id DESC LIMIT 1')) {
+        // Get latest image_upload or reference time from image_uploads
+        if (trimmed.includes('FROM image_uploads')) {
           if (state.image_uploads.length === 0) return undefined;
           const sorted = [...state.image_uploads].sort((a, b) => b.id - a.id);
           return sorted[0];

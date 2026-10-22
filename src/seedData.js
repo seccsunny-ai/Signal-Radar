@@ -449,7 +449,15 @@ const SAMPLE_2_DATA = {
   ]
 };
 
+let SAMPLE_3_DATA = null;
+try {
+  SAMPLE_3_DATA = require('../sample3_parsed.json');
+} catch (e) {
+  // Optional fallback
+}
+
 module.exports = {
   SAMPLE_1_DATA,
-  SAMPLE_2_DATA
+  SAMPLE_2_DATA,
+  SAMPLE_3_DATA
 };
