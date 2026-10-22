@@ -73,7 +73,12 @@ Be extremely accurate with:
 5. All symbols in both top and bottom tables if image has multiple tables.
 `;
 
-  const modelsToTry = ['gemini-3.8-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite'];
+  const modelsToTry = [
+    'gemini-3.5-flash-lite',
+    'gemini-flash-lite-latest',
+    'gemini-3.8-flash',
+    'gemini-flash-latest'
+  ];
   let lastError = null;
 
   for (const model of modelsToTry) {
