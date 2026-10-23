@@ -1,5 +1,5 @@
 const db = require('./db');
-const { INDICATOR_MAP, parseSignalDate } = require('./indicators');
+const { INDICATOR_MAP, parseSignalDate, normalizeIndicatorType } = require('./indicators');
 
 /**
  * Ingests a structured batch of rows into the database
@@ -61,10 +61,11 @@ function ingestParsedData({
       upsertSymbol.run(symbol);
 
       for (const sig of row.signals) {
-        const indKey = sig.ind || sig.indicator;
+        const rawKey = sig.ind || sig.indicator;
+        const indKey = normalizeIndicatorType(rawKey) || rawKey;
         const meta = INDICATOR_MAP[indKey] || {
           name: indKey,
-          group: indKey.includes('BOS') || indKey.includes('CHoCH') ? 'STRUCTURE' : 'OTHER',
+          group: indKey.includes('BOS') || indKey.includes('CHoCH') ? 'STRUCTURE' : (indKey.includes('G') ? 'GOLD' : 'OTHER'),
           direction: indKey.includes('↑') || indKey.includes('🔥') ? 'BULLISH' : 'BEARISH'
         };
 

@@ -66,11 +66,23 @@ Return ONLY a strict JSON object with this exact structure:
   ]
 }
 Be extremely accurate with:
-1. Symbol names (e.g. BTCUSDT.P, 1000BONKUSDT.P, NEARUSDT.P, BCHUSDT.P, etc.)
+1. Symbol names (e.g. BTCUSDT.P, SUIUSDT.P, 1000BONKUSDT.P, NEARUSDT.P, BCHUSDT.P, etc.)
 2. Identifying the ⚡ lightning symbol before any indicator line to mark isRecent = true.
-3. Distinguishing G🔥 (Gold Buy) vs G❄ (Gold Sell).
-4. Distinguishing Int BOS vs Sw BOS vs Int CHoCH vs Sw CHoCH and ↑ vs ↓.
-5. All symbols in both top and bottom tables if image has multiple tables.
+3. Distinguishing G🔥 (Gold Buy) vs G❄ (Gold Sell):
+   - "G🔥" = Gold Buy (Bullish). Accompanied by a fire/flame emoji 🔥.
+   - "G❄" = Gold Sell (Bearish). Accompanied by a snowflake/ice emoji ❄.
+   - CAUTION: Pay close attention to the emoji after G! If it is a snowflake ❄ or bearish signal, output "G❄". Do NOT confuse G❄ with G🔥!
+4. Divergences:
+   - "V↑" (VMC Bull Div, arrow UP) vs "V↓" (VMC Bear Div, arrow DOWN).
+   - "R↑" (RSI Bull Div, arrow UP) vs "R↓" (RSI Bear Div, arrow DOWN).
+5. Structure Breaks:
+   - "Int BOS↑" vs "Int BOS↓"
+   - "Sw BOS↑" vs "Sw BOS↓"
+   - "Int CHoCH↑" vs "Int CHoCH↓"
+   - "Sw CHoCH↑" vs "Sw CHoCH↓"
+6. Exact Timestamps:
+   - Capture the exact time and date string as written (e.g. "23 Oct 12:30", "12:30", "22 Oct 15:15", "25 Nov 2024 05:30").
+7. Extract all symbols in both top and bottom tables if the image contains multiple stacked tables.
 `;
 
   const modelsToTry = [

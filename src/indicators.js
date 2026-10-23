@@ -130,19 +130,42 @@ const BULLISH_STRUCTURE_TYPES = ['Int BOS↑', 'Sw BOS↑', 'Int CHoCH↑', 'Sw 
 const BEARISH_STRUCTURE_TYPES = ['Int BOS↓', 'Sw BOS↓', 'Int CHoCH↓', 'Sw CHoCH↓'];
 
 /**
- * Normalizes indicator string into canonical form
+ * Normalizes indicator string into canonical form (stripping variation selectors and handling variations)
  */
 function normalizeIndicatorType(str) {
   if (!str) return null;
-  const s = str.trim();
+  const s = String(str).replace(/[\uFE0E\uFE0F]/g, '').trim();
+
+  // Gold checks (🔥 = Buy, ❄ = Sell)
+  if (/G.*[❄\u2744]|gold.*sell/i.test(s)) return 'G❄';
+  if (/G.*[🔥\uD83D\uDD25]|gold.*buy/i.test(s)) return 'G🔥';
+
+  // VMC checks (↑ = Bull, ↓ = Bear)
+  if (/V.*[↑\u2191\u2B06]|vmc.*bull/i.test(s)) return 'V↑';
+  if (/V.*[↓\u2193\u2B07]|vmc.*bear/i.test(s)) return 'V↓';
+
+  // RSI checks (↑ = Bull, ↓ = Bear)
+  if (/R.*[↑\u2191\u2B06]|rsi.*bull/i.test(s)) return 'R↑';
+  if (/R.*[↓\u2193\u2B07]|rsi.*bear/i.test(s)) return 'R↓';
+
+  // Structure breaks
+  if (/int.*bos.*[↑\u2191\u2B06]|int.*bos.*bull/i.test(s)) return 'Int BOS↑';
+  if (/int.*bos.*[↓\u2193\u2B07]|int.*bos.*bear/i.test(s)) return 'Int BOS↓';
+  if (/sw.*bos.*[↑\u2191\u2B06]|sw.*bos.*bull/i.test(s)) return 'Sw BOS↑';
+  if (/sw.*bos.*[↓\u2193\u2B07]|sw.*bos.*bear/i.test(s)) return 'Sw BOS↓';
+  if (/int.*choch.*[↑\u2191\u2B06]|int.*choch.*bull/i.test(s)) return 'Int CHoCH↑';
+  if (/int.*choch.*[↓\u2193\u2B07]|int.*choch.*bear/i.test(s)) return 'Int CHoCH↓';
+  if (/sw.*choch.*[↑\u2191\u2B06]|sw.*choch.*bull/i.test(s)) return 'Sw CHoCH↑';
+  if (/sw.*choch.*[↓\u2193\u2B07]|sw.*choch.*bear/i.test(s)) return 'Sw CHoCH↓';
+
   for (const key of Object.keys(INDICATOR_MAP)) {
-    if (s.includes(key)) return key;
+    if (s.includes(key.replace(/[\uFE0E\uFE0F]/g, ''))) return key;
   }
-  return null;
+  return s;
 }
 
 /**
- * Parses date string like "22 Oct 15:15" or "25 Nov 2024 05:30" into Date object using reference year/date
+ * Parses date string like "22 Oct 15:15", "23 Oct 12.30", "12:30", or "25 Nov 2024 05:30"
  */
 function parseSignalDate(dateStr, referenceDate = new Date()) {
   if (!dateStr) return new Date();
@@ -152,38 +175,47 @@ function parseSignalDate(dateStr, referenceDate = new Date()) {
     jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
   };
   
-  // Format typically: "22 Oct 15:15" or "25 Nov 2024 05:30" or "22 Oct 15:15:00"
-  const match = dateStr.match(/(\d{1,2})\s+([A-Za-z]{3})(?:\s+(\d{4}))?(?:\s+(\d{1,2}):(\d{2}))?/i);
-  if (!match) {
-    const parsed = new Date(dateStr);
-    return isNaN(parsed.getTime()) ? new Date() : parsed;
-  }
-  
-  const day = parseInt(match[1], 10);
-  const monthStr = match[2].toLowerCase();
-  const month = months[monthStr] !== undefined ? months[monthStr] : 0;
-  const explicitYear = match[3] ? parseInt(match[3], 10) : null;
-  const hour = match[4] ? parseInt(match[4], 10) : 0;
-  const minute = match[5] ? parseInt(match[5], 10) : 0;
-  
-  const refYear = referenceDate.getFullYear();
-  const refMonth = referenceDate.getMonth();
-  
-  let year = refYear;
-  if (explicitYear) {
-    year = explicitYear;
-  } else {
-    // Financial indicator tables only display historical/current events, NEVER future events.
-    // If the signal's month is after reference month (e.g. Nov 25 when reference date is Oct),
-    // the event occurred in the previous year.
-    // NOTE: Within the same month, day differences are due to local timezone vs UTC offset, not previous year!
-    if (month > refMonth) {
+  const str = String(dateStr).trim();
+
+  // 1. Full date with month (supports : and . for time)
+  const matchFull = str.match(/(\d{1,2})\s+([A-Za-z]{3})(?:\s+(\d{4}))?(?:\s+(\d{1,2})[:.](\d{2}))?/i);
+  if (matchFull) {
+    const day = parseInt(matchFull[1], 10);
+    const month = months[matchFull[2].toLowerCase()] ?? 0;
+    const explicitYear = matchFull[3] ? parseInt(matchFull[3], 10) : null;
+    const hour = matchFull[4] ? parseInt(matchFull[4], 10) : 0;
+    const minute = matchFull[5] ? parseInt(matchFull[5], 10) : 0;
+    
+    const refYear = referenceDate.getFullYear();
+    const refMonth = referenceDate.getMonth();
+    
+    let year = refYear;
+    if (explicitYear) {
+      year = explicitYear;
+    } else if (month > refMonth) {
       year = refYear - 1;
     }
+    
+    return new Date(Date.UTC(year, month, day, hour, minute, 0));
   }
-  
-  const d = new Date(Date.UTC(year, month, day, hour, minute, 0));
-  return d;
+
+  // 2. Time-only format: '12:30', '12.30'
+  const matchTimeOnly = str.match(/^(\d{1,2})[:.](\d{2})$/);
+  if (matchTimeOnly) {
+    const hour = parseInt(matchTimeOnly[1], 10);
+    const minute = parseInt(matchTimeOnly[2], 10);
+    return new Date(Date.UTC(
+      referenceDate.getFullYear(),
+      referenceDate.getMonth(),
+      referenceDate.getDate(),
+      hour,
+      minute,
+      0
+    ));
+  }
+
+  const parsed = new Date(str);
+  return isNaN(parsed.getTime()) ? new Date() : parsed;
 }
 
 module.exports = {
