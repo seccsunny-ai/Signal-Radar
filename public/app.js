@@ -162,6 +162,11 @@ function applyFullData(data) {
     state.uploads = data.uploads;
     renderUploads();
   }
+  try {
+    localStorage.setItem('tv_dashboard_cache', JSON.stringify(data));
+  } catch (e) {
+    console.warn('Cache write error:', e);
+  }
 }
 
 async function syncUserUploads() {
@@ -189,16 +194,31 @@ async function syncUserUploads() {
 
 // Data Fetching
 async function loadAllData() {
+  // 1. Immediately restore cached data so user NEVER experiences blank/lost views on refresh
+  try {
+    const cached = localStorage.getItem('tv_dashboard_cache');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      applyFullData(parsed);
+    }
+  } catch (e) {
+    console.warn('Cache restore error:', e);
+  }
+
+  // 2. Sync user uploads with server in background
   const synced = await syncUserUploads();
   if (synced) return;
 
-  await Promise.all([
-    fetchStats(),
-    fetchConfluences(),
-    fetchMatrix(),
-    fetchSignals(),
-    fetchUploads()
-  ]);
+  // 3. Fallback only if no cache exists
+  if (!state.matrix || state.matrix.length === 0) {
+    await Promise.all([
+      fetchStats(),
+      fetchConfluences(),
+      fetchMatrix(),
+      fetchSignals(),
+      fetchUploads()
+    ]);
+  }
 }
 
 async function fetchStats() {
@@ -253,9 +273,30 @@ function renderConfluences() {
     empty.classList.remove('hidden');
     return;
   }
+
+  let list = [...(state.confluences || [])];
+  const f = state.filters.confluence || {};
+  if (f.status && f.status !== 'ALL') {
+    list = list.filter(c => c.status === f.status);
+  }
+  if (f.direction && f.direction !== 'ALL') {
+    list = list.filter(c => c.direction === f.direction);
+  }
+  if (f.timeframe) {
+    list = list.filter(c => c.timeframe.toLowerCase() === f.timeframe.toLowerCase());
+  }
+  if (f.symbol) {
+    const s = f.symbol.toLowerCase();
+    list = list.filter(c => c.symbol.toLowerCase().includes(s));
+  }
+
+  if (list.length === 0) {
+    empty.classList.remove('hidden');
+    return;
+  }
   empty.classList.add('hidden');
 
-  state.confluences.forEach(c => {
+  list.forEach(c => {
     const isBull = c.direction === 'BULLISH';
     const isConfirmed = c.status === 'CONFIRMED';
     const isPending = c.status === 'PENDING';
@@ -388,7 +429,7 @@ function setConfluenceFilter(type, value) {
     if (active) active.className = 'conf-filter-btn px-2.5 py-1 text-xs font-bold rounded-lg bg-amber-500 text-slate-950 transition';
   }
 
-  fetchConfluences();
+  renderConfluences();
 }
 
 let confSearchTimeout = null;
@@ -396,7 +437,7 @@ function handleConfSearch(val) {
   clearTimeout(confSearchTimeout);
   confSearchTimeout = setTimeout(() => {
     state.filters.confluence.symbol = val.trim();
-    fetchConfluences();
+    renderConfluences();
   }, 300);
 }
 
@@ -615,9 +656,20 @@ function renderSignals() {
   const countLabel = document.getElementById('signalsCountLabel');
   tbody.innerHTML = '';
 
-  countLabel.textContent = `Showing ${state.signals.length} signals`;
+  let list = [...(state.signals || [])];
+  const f = state.filters.signals || {};
+  if (f.indicatorType) list = list.filter(s => s.indicator_type === f.indicatorType);
+  if (f.timeframe) list = list.filter(s => s.timeframe.toLowerCase() === f.timeframe.toLowerCase());
+  if (f.direction && f.direction !== 'ALL') list = list.filter(s => s.direction === f.direction);
+  if (f.recentOnly) list = list.filter(s => s.is_recent === 1);
+  if (f.symbol) {
+    const sym = f.symbol.toLowerCase();
+    list = list.filter(s => s.symbol.toLowerCase().includes(sym));
+  }
 
-  if (!state.signals || state.signals.length === 0) {
+  countLabel.textContent = `Showing ${list.length} signals`;
+
+  if (list.length === 0) {
     tbody.innerHTML = `
       <tr>
         <td colspan="8" class="text-center py-10 text-slate-500">
@@ -628,7 +680,7 @@ function renderSignals() {
     return;
   }
 
-  state.signals.forEach(s => {
+  list.forEach(s => {
     const isBull = s.direction === 'BULLISH';
     const tr = document.createElement('tr');
     tr.className = 'hover:bg-slate-800/40 font-mono transition';
@@ -664,7 +716,7 @@ function applySignalFilters() {
   state.filters.signals.recentOnly = document.getElementById('filterRecentOnly').value === 'true';
   state.filters.signals.symbol = document.getElementById('filterSymbol').value.trim();
 
-  fetchSignals();
+  renderSignals();
 }
 
 function exportSignalsCSV() {
@@ -787,11 +839,13 @@ async function processSelectedUpload() {
         if (json.parsedData && json.parsedData.rows) {
           try {
             const savedUploads = JSON.parse(localStorage.getItem('tv_user_uploads') || '[]');
+            const uploadKey = json.uploadKey || ('up_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7));
             savedUploads.push({
+              uploadKey,
               headerText: json.parsedData.headerText || '',
               referenceTime: json.parsedData.referenceTime || new Date().toISOString(),
               tableType: json.parsedData.tableType || 'AUTO',
-              filename: json.file?.filename || 'uploaded_image.png',
+              filename: json.file?.filename || (uploadKey + '.png'),
               rows: json.parsedData.rows
             });
             localStorage.setItem('tv_user_uploads', JSON.stringify(savedUploads));
@@ -807,7 +861,6 @@ async function processSelectedUpload() {
           applyFullData(json.fullData);
         } else {
           await syncUserUploads();
-          await loadAllData();
         }
 
         switchTab('matrix');
@@ -912,6 +965,7 @@ async function resetAllData() {
   }
 
   localStorage.removeItem('tv_user_uploads');
+  localStorage.removeItem('tv_dashboard_cache');
   try {
     await fetch('/api/reset', { method: 'POST' });
     await loadSample('all');
@@ -1033,14 +1087,14 @@ function switchTab(tabName) {
   if (content) content.classList.remove('hidden');
   if (btn) btn.className = 'tab-button border-b-2 border-amber-500 text-amber-400 px-3 sm:px-4 py-3 text-xs sm:text-sm font-semibold flex items-center space-x-2';
 
-  if (tabName === 'confluence') fetchConfluences();
-  if (tabName === 'matrix') fetchMatrix();
-  if (tabName === 'signals') fetchSignals();
-  if (tabName === 'uploads') fetchUploads();
+  if (tabName === 'confluence') renderConfluences();
+  if (tabName === 'matrix') renderMatrix();
+  if (tabName === 'signals') renderSignals();
+  if (tabName === 'uploads') renderUploads();
 }
 
-function refreshCurrentTab() {
-  fetchStats();
+async function refreshCurrentTab() {
+  await syncUserUploads();
   switchTab(state.activeTab);
   showToast('Refreshed data', 'info');
 }

@@ -233,7 +233,7 @@ const db = {
       run: (...params) => {
         // Insert / update image upload
         if (trimmed.startsWith('INSERT INTO image_uploads')) {
-          const [filename, original_name, file_path, header_text, reference_time, table_type, signals_count] = params;
+          const [filename, original_name, file_path, header_text, reference_time, table_type, signals_count, upload_key] = params;
           const id = state.counters.image_uploads++;
           const entry = {
             id,
@@ -244,6 +244,7 @@ const db = {
             reference_time,
             table_type,
             signals_count,
+            upload_key: upload_key || filename || ('up_' + id),
             uploaded_at: new Date().toISOString()
           };
           state.image_uploads.push(entry);

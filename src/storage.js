@@ -10,14 +10,15 @@ function ingestParsedData({
   tableType = 'UNKNOWN',
   filename = '',
   filePath = '',
+  uploadKey = '',
   rows = []
 }) {
   const refDate = referenceTime ? new Date(referenceTime) : new Date();
 
   // Begin transaction
   const insertUpload = db.prepare(`
-    INSERT INTO image_uploads (filename, original_name, file_path, header_text, reference_time, table_type, signals_count)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO image_uploads (filename, original_name, file_path, header_text, reference_time, table_type, signals_count, upload_key)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const upsertSymbol = db.prepare(`
@@ -50,7 +51,8 @@ function ingestParsedData({
       headerText,
       referenceTime,
       tableType,
-      0
+      0,
+      uploadKey
     );
     const uploadId = uploadResult.lastInsertRowid;
 

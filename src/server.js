@@ -209,12 +209,14 @@ function getFullDashboardData() {
       // Auto-commit or return for review based on query param
       const autoCommit = req.query.autoCommit !== 'false';
       if (autoCommit && parsedData.rows && parsedData.rows.length > 0) {
+        const uploadKey = 'up_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
         const result = ingestParsedData({
           headerText: parsedData.headerText || '',
           referenceTime: parsedData.referenceTime || new Date().toISOString(),
           tableType: parsedData.tableType || 'AUTO',
           filename,
           filePath,
+          uploadKey,
           rows: parsedData.rows
         });
 
@@ -224,6 +226,7 @@ function getFullDashboardData() {
           success: true,
           committed: true,
           uploadId: result.uploadId,
+          uploadKey,
           insertedSignalsCount: result.insertedSignalsCount,
           parsedData,
           file: {
@@ -269,15 +272,17 @@ app.post('/api/sync', (req, res) => {
     let newlyIngestedCount = 0;
 
     if (Array.isArray(uploads) && uploads.length > 0) {
-      const existingUploads = db.prepare(`SELECT header_text, reference_time, filename FROM image_uploads`).all();
+      const existingUploads = db.prepare(`SELECT header_text, reference_time, filename, upload_key FROM image_uploads`).all();
       
       for (const up of uploads) {
         if (!up.rows || !Array.isArray(up.rows)) continue;
 
-        // Check if already in this instance by filename or headerText
+        const upKey = up.uploadKey || up.id || up.filename;
+
+        // Check if already in this instance by uploadKey or filename
         const alreadyExists = existingUploads.some(
-          e => (up.filename && e.filename === up.filename) ||
-               (up.headerText && e.header_text && e.header_text === up.headerText)
+          e => (upKey && e.upload_key === upKey) ||
+               (up.filename && e.filename === up.filename)
         );
 
         if (!alreadyExists) {
@@ -285,15 +290,17 @@ app.post('/api/sync', (req, res) => {
             headerText: up.headerText || '',
             referenceTime: up.referenceTime || new Date().toISOString(),
             tableType: up.tableType || 'AUTO',
-            filename: up.filename || 'uploaded_image.png',
+            filename: up.filename || (upKey + '.png'),
             filePath: up.filePath || '',
+            uploadKey: upKey,
             rows: up.rows
           });
           newlyIngestedCount += result.insertedSignalsCount;
           existingUploads.push({
             header_text: up.headerText || '',
             reference_time: up.referenceTime || '',
-            filename: up.filename || ''
+            filename: up.filename || '',
+            upload_key: upKey
           });
         }
       }
