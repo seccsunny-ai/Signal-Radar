@@ -152,6 +152,29 @@ app.get('/api/matrix', (req, res) => {
   }
 });
 
+function getFullDashboardData() {
+  const stats = getDashboardStats();
+  const confluences = getConfluences();
+  const confirmedCount = confluences.filter(c => c.status === 'CONFIRMED').length;
+  const pendingCount = confluences.filter(c => c.status === 'PENDING').length;
+  const matrix = getMatrixData();
+  const signals = querySignals({ limit: 500 });
+  const uploads = db.prepare(`SELECT * FROM image_uploads ORDER BY uploaded_at DESC`).all();
+
+  return {
+    stats: {
+      ...stats,
+      confluencesTotal: confluences.length,
+      confluencesConfirmed: confirmedCount,
+      confluencesPending: pendingCount
+    },
+    confluences,
+    matrix,
+    signals,
+    uploads
+  };
+}
+
 // Image Upload Endpoint with Vision OCR
 app.post('/api/upload', upload.single('image'), async (req, res) => {
   try {
@@ -182,29 +205,6 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
     // Process image with Gemini Vision
     try {
       const parsedData = await parseTradingViewImage(filePath, mimeType, apiKey);
-      
-function getFullDashboardData() {
-  const stats = getDashboardStats();
-  const confluences = getConfluences();
-  const confirmedCount = confluences.filter(c => c.status === 'CONFIRMED').length;
-  const pendingCount = confluences.filter(c => c.status === 'PENDING').length;
-  const matrix = getMatrixData();
-  const signals = querySignals({ limit: 100 });
-  const uploads = db.prepare(`SELECT * FROM image_uploads ORDER BY uploaded_at DESC`).all();
-
-  return {
-    stats: {
-      ...stats,
-      confluencesTotal: confluences.length,
-      confluencesConfirmed: confirmedCount,
-      confluencesPending: pendingCount
-    },
-    confluences,
-    matrix,
-    signals,
-    uploads
-  };
-}
 
       // Auto-commit or return for review based on query param
       const autoCommit = req.query.autoCommit !== 'false';
